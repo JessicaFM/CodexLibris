@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  db:
+    image: 'postgres:latest'
+    container_name: codexlibris-db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: codexlibris
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    command: [
+      "postgres",
+      "-c", "listen_addresses=*"
+    ] 
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d codexlibris"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+  api_rest:
+    build:
+      context: ./API/CodexLibrisAPI
+      dockerfile: Dockerfile
+    container_name: api_container
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/codexlibris
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+volumes:
+  postgres_data:
+networks:
+  mynetwork:
+    driver: bridge
