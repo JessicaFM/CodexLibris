@@ -4,19 +4,17 @@
  */
 package com.codexlibris.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 /**
  *
  * @author jessica
  */
-public class LoginRequest {
+@Getter
+@AllArgsConstructor
+public class AuthResponse {
+    private String token;
     private String username;
-    private String password;
-    
-    public String getUsername() {
-        return username;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
+    private Integer roleId;
 }
+

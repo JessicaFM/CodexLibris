@@ -4,11 +4,15 @@
  */
 package com.codexlibris.service;
 
+import com.codexlibris.dto.AuthResponse;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import com.codexlibris.model.User;
 import com.codexlibris.repository.UserRepository;
-import com.codexlibris.utils.JwtUtil;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  *
@@ -16,26 +20,41 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AuthService {
-    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+
     
-    public AuthService(UserRepository userRepository, 
-            PasswordEncoder passwordEncoder, 
-            JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
+    public AuthService(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,JwtService jwtService, UserDetailsService userDetailsService, UserRepository userRepository) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
-    
-    public String authenticate(String userName, String password) {
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new RuntimeException("Usuari o contrasenya incorrecte"));
-        
-        if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Usuari o contrasenya incorrecte");
+
+    public AuthResponse authenticate(String username, String password) {
+        System.out.println("🟢 4 - Auth user: " + username);
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        System.out.println("🟢 5 - In DB: " + user.getPassword());
+        System.out.println("🟢 6 - In POST: " + password);
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            System.out.println("🔴 7 - Incorrect password");
+            throw new BadCredentialsException("Usuari o contrasenya incorrecte");
         }
-        
-        return jwtUtil.generateToken(userName);
+
+        String token = jwtService.generateToken(user, String.valueOf(user.getRole().getId()));
+
+        return new AuthResponse(token, user.getUsername(), user.getRole().getId());
     }
+
+
 }
