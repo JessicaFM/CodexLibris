@@ -13,7 +13,10 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 /**
  *
  * @author jessica
@@ -22,6 +25,7 @@ import java.util.Map;
 public class JwtService {
 
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 🔹 Genera una clave segura automáticamente
+    private final Set<String> blacklistedTokens = new HashSet<>(); // Stores invalid tokens
 
     public String generateToken(UserDetails userDetails, String role) {
         Map<String, Object> claims = new HashMap<>();
@@ -70,6 +74,14 @@ public class JwtService {
             return bearerToken.substring(7);
         }
         return null;
+    }
+    
+    public void blacklistToken(String token) {
+        blacklistedTokens.add(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
     }
 }
 
