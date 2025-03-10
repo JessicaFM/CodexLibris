@@ -4,15 +4,13 @@
  */
 package com.codexlibris.repository;
 
+import com.codexlibris.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.codexlibris.model.User;
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author jessica
  */
-public interface UserRepository extends JpaRepository<User, Long> {    
-    Optional<User> findByUsername(String username);
-    Optional<User> findByEmail(String email);
-}
+@Repository
+public interface RoleRepository extends JpaRepository<Role, Integer> {}
