@@ -6,12 +6,21 @@ package com.codexlibris.controller;
 
 
 import com.codexlibris.model.User;
+import com.codexlibris.model.Role;
+import com.codexlibris.dto.UserDTO;
+import com.codexlibris.repository.RoleRepository;
 import com.codexlibris.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -20,15 +29,21 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "Usuaris", description = "Endpoints per a gestionar usuaris")
 public class UserController {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository,RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
+    @Operation(summary = "Obtenir tots els usuaris", description = "Retorna la llista completa de usuaris registrats.")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -42,11 +57,6 @@ public class UserController {
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
     }
 
     @PutMapping("/{id}")
@@ -73,5 +83,43 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    
+    @PostMapping
+    @Operation(summary = "Crear un nou usuari", description = "Crea un usuari amb les dades proporcionades en la solicitut.")
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errors = result.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .toList();
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Error: El email ja está registrat.");
+        }
+        
+        List<Integer> allowedRoles = List.of(1, 2);
+        if (!allowedRoles.contains(userDTO.getRoleId())) {
+            throw new RuntimeException("Error: El rol introduït no és vàlid");
+        }
+
+        Role role = roleRepository.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Error: El rol no existeix"));
+
+
+        User user = new User();
+        user.setUsername(userDTO.getUserName());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        user.setIsActive(true);
+        user.setRole(role);
+
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
     }
 }
