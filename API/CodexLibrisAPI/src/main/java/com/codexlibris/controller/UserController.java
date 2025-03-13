@@ -13,14 +13,16 @@ import com.codexlibris.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
@@ -93,6 +95,17 @@ public class UserController {
                     .map(error -> error.getDefaultMessage())
                     .toList();
             return ResponseEntity.badRequest().body(errors);
+        }
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        
+        User authUser = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Error: No s'ha trobat l'usuari autenticat"));
+        
+        if (authUser.getRole().getId() != 1) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Accés denegat: Només els administradors poden crear usuaris.");
         }
 
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
