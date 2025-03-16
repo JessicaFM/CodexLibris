@@ -4,6 +4,8 @@
  */
 package com.codexlibris.model;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
@@ -21,6 +23,8 @@ import com.codexlibris.model.Role;
 @Entity
 @Table(name = "users")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
     
     @Id
@@ -91,5 +95,15 @@ public class User implements UserDetails {
     
     public Role getRole() {
         return role;
+    }
+
+    public User(String username, String firstName, String lastName, String email, String password, boolean isActive, Role role) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.isActive = isActive;
+        this.role = role;
     }
 }

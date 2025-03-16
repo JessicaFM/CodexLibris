@@ -49,9 +49,53 @@ curl -X POST http://localhost:8080/auth/login \
 }
 ```
 
-### Protected Routes (Require JWT)
+### Users
 ```sh
-curl -X GET http://localhost:8080/user/me \
+curl -X GET http://localhost:8080/user/1 \
      -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
+```sh
+curl -X GET http://localhost:8080/users \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
+
+### Books
+```sh
+curl -X GET http://localhost:8080/books \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
+
+```sh
+curl -X GET http://localhost:8080/books/1 \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
+
+### Authors
+```sh
+curl -X GET http://localhost:8080/authors \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
+
+```sh
+curl -X GET http://localhost:8080/authors/1 \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
+
+### Genres
+```sh
+curl -X GET http://localhost:8080/genres \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
+
+```sh
+curl -X GET http://localhost:8080/genres/1 \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json"
+```
