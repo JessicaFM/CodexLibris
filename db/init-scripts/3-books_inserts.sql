@@ -1,20 +1,20 @@
-INSERT INTO authors (id, name, birth_date, nationality) VALUES
-(1, 'Gabriel García Márquez', '1927-03-06', 'Colòmbia'),
-(2, 'Haruki Murakami', '1949-01-12', 'Japó'),
-(3, 'Isabel Allende', '1942-08-02', 'Xile'),
-(4, 'Albert Camus', '1913-11-07', 'França'),
-(5, 'J.K. Rowling', '1965-07-31', 'Regne Unit'),
-(6, 'Mario Vargas Llosa', '1936-03-28', 'Perú'),
-(7, 'Umberto Eco', '1932-01-05', 'Itàlia'),
-(8, 'Paul Auster', '1947-02-03', 'Estats Units'),
-(9, 'Margaret Atwood', '1939-11-18', 'Canadà'),
-(10, 'Kazuo Ishiguro', '1954-11-08', 'Regne Unit');
+INSERT INTO authors (name, birth_date, nationality) VALUES
+('Gabriel García Márquez', '1927-03-06', 'Colòmbia'),
+('Haruki Murakami', '1949-01-12', 'Japó'),
+('Isabel Allende', '1942-08-02', 'Xile'),
+('Albert Camus', '1913-11-07', 'França'),
+('J.K. Rowling', '1965-07-31', 'Regne Unit'),
+('Mario Vargas Llosa', '1936-03-28', 'Perú'),
+('Umberto Eco', '1932-01-05', 'Itàlia'),
+('Paul Auster', '1947-02-03', 'Estats Units'),
+('Margaret Atwood', '1939-11-18', 'Canadà'),
+('Kazuo Ishiguro', '1954-11-08', 'Regne Unit');
 
-INSERT INTO genres (id, name, description) VALUES
-(1, 'Novel·la', 'Narracio en prosa de ficcio'),
-(2, 'Ciència-ficció', 'Histories ambientades en mons futuristes o tecnologics'),
-(3, 'Fantasía', 'Relats que inclouen elements magics i mons imaginaris'),
-(4, 'Misteri', 'Narracions amb trames d''intriga i suspens');
+INSERT INTO genres (name, description) VALUES
+('Novel·la', 'Narracio en prosa de ficcio'),
+('Ciència-ficció', 'Histories ambientades en mons futuristes o tecnologics'),
+('Fantasía', 'Relats que inclouen elements magics i mons imaginaris'),
+('Misteri', 'Narracions amb trames d''intriga i suspens');
 
 INSERT INTO books (title, author_id, isbn, published_date, genre_id, available) VALUES
 ('La casa de la mar', 1, '978-84-123456-01', '2020-05-14', 1, TRUE),

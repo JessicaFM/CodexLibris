@@ -19,9 +19,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDateTime;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -52,19 +54,27 @@ public class GenreController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')") 
     @Operation(summary = "Actualizar un genere a partir de les dades proporcionades")
     public ResponseEntity<Genre> updateGenre(@PathVariable Integer id, @RequestBody Genre genreDetails) {
         return genreRepository.findById(id)
                 .map(genre -> {
                     genre.setName(genreDetails.getName());
-                    genre.setDescription((genreDetails.getDescription()));
+
+                    if(genreDetails.getDescription() != null) {
+                        genre.setDescription(genreDetails.getDescription());
+                    }
+                    
+                    genre.setUpdated_at(LocalDateTime.now());
+                    
                     genreRepository.save(genre);
                     return ResponseEntity.ok(genre);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    @Operation(summary = "Crea un nou genere", description = "Crea un nou genere a partir de les dades proporcionades")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Crea un nou gènere", description = "Crea un nou gènere a partir de les dades proporcionades")
     public ResponseEntity<?> createGenre(@Valid @RequestBody GenreDTO genreDTO, BindingResult result) {
         if (result.hasErrors()) {
             List<String> errors = result.getAllErrors().stream()
@@ -73,22 +83,15 @@ public class GenreController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
-        User authUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Error: No s'ha trobat l'usuari autenticat"));
-
-        if (authUser.getRole().getId() != 1) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Accés denegat: Només els administradors poden crear usuaris.");
-        }
-
         Genre genre = new Genre();
         genre.setName(genreDTO.getName());
         genre.setDescription(genreDTO.getDescription());
 
-        Genre savedGenre = genreRepository.save(genre);
-        return ResponseEntity.ok(savedGenre);
+        try {
+            Genre savedGenre = genreRepository.save(genre);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedGenre);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al desar el gènere");
+        }
     }
 }

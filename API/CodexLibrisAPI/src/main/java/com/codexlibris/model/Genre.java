@@ -1,11 +1,13 @@
 package com.codexlibris.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  *
@@ -27,6 +29,14 @@ public class Genre {
 
     @Column(name = "description")
     private String description;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime created_at;
+
+    @UpdateTimestamp 
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime updated_at;
     
     public Genre(String name, String description) {
         this.name = name;

@@ -3,7 +3,7 @@ package com.codexlibris.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  *
@@ -15,7 +15,7 @@ public class AuthorDTO {
     @NotBlank(message = "El nom del autor es obligatori")
     private String name;
 
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     private String nationality;
 }

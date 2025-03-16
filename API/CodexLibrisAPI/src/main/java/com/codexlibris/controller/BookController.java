@@ -16,6 +16,7 @@ import com.codexlibris.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -69,7 +70,11 @@ public class BookController {
                     book.setAuthor(bookDetails.getAuthor());
                     book.setIsbn(bookDetails.getIsbn());
                     book.setGenre(bookDetails.getGenre());
-                    book.setPublished_date(bookDetails.getPublished_date());
+                    if(bookDetails.getPublished_date() != null) {
+                        book.setPublished_date(bookDetails.getPublished_date());
+                    }
+                    book.setUpdated_at(LocalDateTime.now());
+                    
                     bookRepository.save(book);
                     return ResponseEntity.ok(book);
                 }).orElseGet(() -> ResponseEntity.notFound().build());

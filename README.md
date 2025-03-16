@@ -41,6 +41,7 @@ curl -X POST http://localhost:8080/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username": "admin", "password": "admin"}'
 ```
+
 ```sh
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -48,6 +49,7 @@ curl -X POST http://localhost:8080/auth/login \
     "roleId": 1
 }
 ```
+
 
 ### Users
 ```sh
@@ -60,6 +62,7 @@ curl -X GET http://localhost:8080/users \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
+
 
 ### Books
 ```sh
@@ -74,6 +77,35 @@ curl -X GET http://localhost:8080/books/1 \
      -H "Content-Type: application/json"
 ```
 
+```sh
+curl -X POST http://localhost:8080/books \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "title": "Watchmen (Edició Especial)",
+          "authorId": 1,
+          "isbn": "978-1779501127",
+          "publishedDate": "1986-09-01",
+          "genreId": 2,
+          "available": false
+         }'
+```
+
+```sh
+curl -X PUT http://localhost:8080/books/1 \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "title": "Watchmen (Edició Especial)",
+          "authorId": 1,
+          "isbn": "978-1779501127",
+          "publishedDate": "1986-09-01",
+          "genreId": 2,
+          "available": false
+         }'
+```
+
+
 ### Authors
 ```sh
 curl -X GET http://localhost:8080/authors \
@@ -87,6 +119,28 @@ curl -X GET http://localhost:8080/authors/1 \
      -H "Content-Type: application/json"
 ```
 
+```sh
+curl -X POST http://localhost:8080/authors \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "name": "Alan Moore",
+          "birthDate": "1953-11-18",
+          "nationality": "Regne Unit"
+         }'
+```
+
+```sh
+curl -X PUT http://localhost:8080/authors/11 \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "name": "Alan Moore Actualitzat",
+          "birthDate": "1953-11-18",
+          "nationality": "Regne Unit"
+         }'
+```
+
 ### Genres
 ```sh
 curl -X GET http://localhost:8080/genres \
@@ -98,4 +152,24 @@ curl -X GET http://localhost:8080/genres \
 curl -X GET http://localhost:8080/genres/1 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
+```
+
+```sh
+curl -X POST http://localhost:8080/genres \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "name": "Còmic",
+          "description": "Històries explicades mitjançant vinyetes i diàlegs curts."
+         }'
+```
+
+```sh
+curl -X PUT http://localhost:8080/genres/5 \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "name": "Còmic Actualitzat",
+          "description": "Gènere narratiu gràfic, amb vinyetes i diàlegs curts."
+         }'
 ```
