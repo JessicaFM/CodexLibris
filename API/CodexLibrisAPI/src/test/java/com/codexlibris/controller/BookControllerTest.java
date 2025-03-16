@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,33 +44,45 @@ public class BookControllerTest {
     @BeforeEach
     void setUp() {
         bookRepository.deleteAll();
-        Genre genre = genreRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Error: Genere no trobat"));
-        Author author = authorRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Error: Autor no trobat"));
+        genreRepository.deleteAll();
+        authorRepository.deleteAll();
+        
         LocalDateTime publishedDate = LocalDateTime.of(2023, 1, 1, 0, 0);
+        
+        Genre fantasy = new Genre("Fantasía", "Històries ambientades en mons màgics");
+fantasy = genreRepository.save(fantasy);
+System.out.println("Genre ID: " + fantasy.getId()); // 🔥 Ara ID no serà null
 
-        bookRepository.save(new Book("Llibre de Test", author, "123456789", publishedDate, genre, true));
+
+
+        Author author1 = authorRepository.save(new Author("J.K. Rowling", publishedDate, "Regne Unit"));
+
+        // Crear els llibres
+        Book book1 = new Book("Harry Potter i la pedra filosofal", author1, "123456789", LocalDateTime.of(1997, 6, 26, 0, 0), fantasy, true);
+        bookRepository.save(book1);
     }
 
     @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari autenticat
     void testGetAllBooks() throws Exception {
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].title").value("Llibre de Test"));
+                .andExpect(jsonPath("$[0].title").value("Harry Potter i la pedra filosofal"));
     }
 
     @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari autenticat
     void testGetBookById() throws Exception {
         Book book = bookRepository.findAll().get(0);
         mockMvc.perform(get("/books/" + book.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Llibre de Test"));
+                .andExpect(jsonPath("$.title").value("Harry Potter i la pedra filosofal"));
     }
 
     @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari autenticat
     void testGetBookByIdNotFound() throws Exception {
         mockMvc.perform(get("/books/999"))
                 .andExpect(status().isNotFound());

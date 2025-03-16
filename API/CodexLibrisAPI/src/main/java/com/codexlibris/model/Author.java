@@ -3,6 +3,8 @@ package com.codexlibris.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "authors")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Author {
 
     @Id
@@ -32,4 +36,12 @@ public class Author {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime updated_at;
+    
+    public Author(String name, LocalDateTime birth_date, String nationality) {
+        this.name = name;
+        this.birth_date = birth_date;
+        this.nationality = nationality;
+        this.created_at = LocalDateTime.now();
+        this.updated_at = LocalDateTime.now();
+    }
 }

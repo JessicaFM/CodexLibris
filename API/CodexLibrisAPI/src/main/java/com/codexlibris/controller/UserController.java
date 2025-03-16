@@ -56,12 +56,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtenir un usuari", description = "Obtenir un usuari a partir de les dades proporcionades")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualitzar un usuari a partir de les dades proporcionades")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
         return userRepository.findById(id)
                 .map(user -> {
@@ -126,9 +128,7 @@ public class UserController {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
-
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
         user.setIsActive(true);
         user.setRole(role);
 

@@ -1,21 +1,52 @@
-INSERT INTO authors (author_id, name, birth_date, nationality) VALUES
-(1, 'J.K. Rowling', '1965-07-31', 'Regne Unit'),
-(2, 'George Orwell', '1903-06-25', 'Regne Unit'),
-(3, 'Mercè Rodoreda', '1908-10-10', 'Catalunya'),
-(4, 'Albert Sánchez Piñol', '1965-07-11', 'Catalunya'),
-(5, 'Jane Austen', '1775-12-16', 'Regne Unit');
+INSERT INTO authors (id, name, birth_date, nationality) VALUES
+(1, 'Gabriel García Márquez', '1927-03-06', 'Colòmbia'),
+(2, 'Haruki Murakami', '1949-01-12', 'Japó'),
+(3, 'Isabel Allende', '1942-08-02', 'Xile'),
+(4, 'Albert Camus', '1913-11-07', 'França'),
+(5, 'J.K. Rowling', '1965-07-31', 'Regne Unit'),
+(6, 'Mario Vargas Llosa', '1936-03-28', 'Perú'),
+(7, 'Umberto Eco', '1932-01-05', 'Itàlia'),
+(8, 'Paul Auster', '1947-02-03', 'Estats Units'),
+(9, 'Margaret Atwood', '1939-11-18', 'Canadà'),
+(10, 'Kazuo Ishiguro', '1954-11-08', 'Regne Unit');
 
-INSERT INTO genres (genre_id, name, description) VALUES
-(1, 'Fantasía', 'Històries ambientades en mons màgics o amb elements sobrenaturals.'),
-(2, 'Ciència-ficció', 'Narracions basades en avenços científics i tecnològics.'),
-(3, 'Realisme màgic', 'Històries amb elements màgics dins un context realista.'),
-(4, 'Ficció contemporània', 'Novel·les modernes centrades en la societat actual.'),
-(5, 'Romàntic', 'Històries centrades en relacions amoroses.');
+INSERT INTO genres (id, name, description) VALUES
+(1, 'Novel·la', 'Narracio en prosa de ficcio'),
+(2, 'Ciència-ficció', 'Histories ambientades en mons futuristes o tecnologics'),
+(3, 'Fantasía', 'Relats que inclouen elements magics i mons imaginaris'),
+(4, 'Misteri', 'Narracions amb trames d''intriga i suspens');
 
 INSERT INTO books (title, author_id, isbn, published_date, genre_id, available) VALUES
-('Harry Potter i la pedra filosofal', 1, '978-8476290921', '1997-06-26', 1, TRUE),
-('1984', 2, '978-8499890944', '1949-06-08', 2, TRUE),
-('La plaça del diamant', 3, '978-8429753439', '1962-01-01', 4, TRUE),
-('La pell freda', 4, '978-8475882806', '2002-09-12', 3, TRUE),
-('Orgull i prejudici', 5, '978-8491050629', '1813-01-28', 5, TRUE);
-
+('La casa de la mar', 1, '978-84-123456-01', '2020-05-14', 1, TRUE),
+('Els camins de la llum', 2, '978-84-123456-02', '2018-03-21', 2, TRUE),
+('La muntanya invisible', 3, '978-84-123456-03', '2017-07-19', 3, FALSE),
+('Secrets de la nit', 4, '978-84-123456-04', '2015-11-05', 4, TRUE),
+('Histories d''una vida', 5, '978-84-123456-05', '2021-01-10', 1, FALSE),
+('El vent entre els pins', 6, '978-84-123456-06', '2019-09-14', 2, TRUE),
+('El misteri de la torre', 7, '978-84-123456-07', '2016-12-25', 3, TRUE),
+('A la vora del riu', 8, '978-84-123456-08', '2014-06-17', 4, TRUE),
+('L''ultim estiu', 9, '978-84-123456-09', '2020-08-20', 1, FALSE),
+('Petjades en la sorra', 10, '978-84-123456-10', '2013-04-15', 2, TRUE),
+('El crit de l''ocell', 1, '978-84-123456-11', '2012-10-30', 3, FALSE),
+('L''ombra del passat', 2, '978-84-123456-12', '2011-11-11', 4, TRUE),
+('Llagrimes de pluja', 3, '978-84-123456-13', '2022-02-02', 1, TRUE),
+('Un mon de somnis', 4, '978-84-123456-14', '2018-07-23', 2, FALSE),
+('El vell cafe', 5, '978-84-123456-15', '2017-09-07', 3, TRUE),
+('Dies d''hivern', 6, '978-84-123456-16', '2019-05-05', 4, FALSE),
+('Misteris del bosc', 7, '978-84-123456-17', '2015-01-13', 1, TRUE),
+('Els somriures oblidats', 8, '978-84-123456-18', '2013-03-22', 2, FALSE),
+('Foc i cendra', 9, '978-84-123456-19', '2012-06-30', 3, TRUE),
+('Nit de tempesta', 10, '978-84-123456-20', '2011-08-29', 4, TRUE),
+('La memoria de l''aigua', 1, '978-84-123456-21', '2020-11-12', 1, FALSE),
+('El llibre oblidat', 2, '978-84-123456-22', '2019-10-18', 2, TRUE),
+('Un lloc secret', 3, '978-84-123456-23', '2017-06-26', 3, TRUE),
+('El laberint de les animes', 4, '978-84-123456-24', '2016-05-30', 4, FALSE),
+('Les ales del temps', 5, '978-84-123456-25', '2018-12-10', 1, TRUE),
+('Aromes de tardor', 6, '978-84-123456-26', '2015-08-14', 2, FALSE),
+('Murmuris del bosc', 7, '978-84-123456-27', '2014-09-19', 3, TRUE),
+('El castell de vidre', 8, '978-84-123456-28', '2012-07-23', 4, TRUE),
+('Passatgers del temps', 9, '978-84-123456-29', '2011-03-03', 1, FALSE),
+('Histories de la mar', 10, '978-84-123456-30', '2021-07-15', 2, TRUE),
+('Un indret magic', 1, '978-84-123456-31', '2020-12-08', 3, FALSE),
+('Somnis de primavera', 2, '978-84-123456-32', '2019-02-22', 4, TRUE),
+('El crit del vent', 3, '978-84-123456-33', '2017-11-11', 1, TRUE);

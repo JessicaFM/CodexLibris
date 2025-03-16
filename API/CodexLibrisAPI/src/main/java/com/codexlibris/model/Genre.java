@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "genres")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Genre {
 
     @Id
@@ -23,10 +27,9 @@ public class Genre {
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime created_at;
-
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime updated_at;
+    
+    public Genre(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

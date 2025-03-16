@@ -44,11 +44,13 @@ public class Book {
     @Column(name = "available")
     private Boolean available;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    /*
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime created_at;
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime updated_at;
+*/
 
     public Author getAuthor() { return author; }
 
@@ -61,7 +63,5 @@ public class Book {
         this.published_date = published_date;
         this.genre = genre;
         this.available = available;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
     }
 }

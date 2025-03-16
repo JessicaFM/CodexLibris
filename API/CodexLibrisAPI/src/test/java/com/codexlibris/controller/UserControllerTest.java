@@ -38,9 +38,14 @@ public class UserControllerTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+        
         Role adminRole = roleRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Error: Rol ADMIN no trobat"));
         userRepository.save(new User("admin", "Admin", "User", "admin@example.com", "password123", true, adminRole));
+        
+        Role userRole = roleRepository.findById(2)
+            .orElseThrow(() -> new RuntimeException("Error: Rol USER no trobat"));
+        userRepository.save(new User("user", "Usuari", "Normal", "user@example.com", "password123", true, userRole));
     }
 
     @Test
@@ -52,12 +57,13 @@ public class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"}) // Simulem un usuari normal
+    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari amb rol USER
     void testCreateUserForbidden() throws Exception {
+        // 🔥 Intentem fer una petició com a USER, ha de donar 403 Forbidden
         mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"userName\": \"nouusuari\", \"firstName\": \"Nou\", \"lastName\": \"Usuari\", \"email\": \"nou@example.com\", \"password\": \"123456\", \"roleId\": 2 }"))
-                .andExpect(status().isForbidden());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"nouusuari\", \"firstName\": \"Nou\", \"lastName\": \"Usuari\", \"email\": \"nou@example.com\", \"password\": \"123456\", \"roleId\": 2 }"))
+                .andExpect(status().isForbidden()); // 🔥 Esperem un 403 Forbidden
     }
 
     @Test
