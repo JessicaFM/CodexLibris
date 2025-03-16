@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  *
@@ -44,13 +46,13 @@ public class Book {
     @Column(name = "available")
     private Boolean available;
 
-    /*
-    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime created_at;
 
+    @UpdateTimestamp 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime updated_at;
-*/
 
     public Author getAuthor() { return author; }
 

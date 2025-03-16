@@ -4,6 +4,7 @@
  */
 package com.codexlibris.config;
 
+import com.codexlibris.security.JwtAuthenticationEntryPoint;
 import com.codexlibris.security.JwtAuthenticationFilter;
 import com.codexlibris.service.JwtService;
 import org.springframework.context.annotation.Bean;
@@ -32,11 +33,13 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JwtService jwtService;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 
-    public SecurityConfig(JwtService jwtService, UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtService jwtService, UserDetailsService userDetailsService, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Bean
@@ -64,6 +67,9 @@ public class SecurityConfig {
                         "/swagger-ui.html"
                 ).permitAll()
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService), UsernamePasswordAuthenticationFilter.class);

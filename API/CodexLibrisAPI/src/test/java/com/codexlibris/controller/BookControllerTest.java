@@ -10,6 +10,7 @@ import com.codexlibris.model.Genre;
 import com.codexlibris.repository.AuthorRepository;
 import com.codexlibris.repository.BookRepository;
 import com.codexlibris.repository.GenreRepository;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,11 @@ public class BookControllerTest {
         genreRepository.deleteAll();
         authorRepository.deleteAll();
         
-        LocalDateTime publishedDate = LocalDateTime.of(2023, 1, 1, 0, 0);
+        LocalDate publishedDate = LocalDate.of(2023, 1, 1);
         
         Genre fantasy = new Genre("Fantasía", "Històries ambientades en mons màgics");
-fantasy = genreRepository.save(fantasy);
-System.out.println("Genre ID: " + fantasy.getId()); // 🔥 Ara ID no serà null
-
+        fantasy = genreRepository.save(fantasy);
+        System.out.println("Genre ID: " + fantasy.getId());
 
 
         Author author1 = authorRepository.save(new Author("J.K. Rowling", publishedDate, "Regne Unit"));
@@ -63,7 +63,7 @@ System.out.println("Genre ID: " + fantasy.getId()); // 🔥 Ara ID no serà null
     }
 
     @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari autenticat
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     void testGetAllBooks() throws Exception {
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
@@ -73,7 +73,7 @@ System.out.println("Genre ID: " + fantasy.getId()); // 🔥 Ara ID no serà null
     }
 
     @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari autenticat
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     void testGetBookById() throws Exception {
         Book book = bookRepository.findAll().get(0);
         mockMvc.perform(get("/books/" + book.getId()))
@@ -82,7 +82,7 @@ System.out.println("Genre ID: " + fantasy.getId()); // 🔥 Ara ID no serà null
     }
 
     @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari autenticat
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     void testGetBookByIdNotFound() throws Exception {
         mockMvc.perform(get("/books/999"))
                 .andExpect(status().isNotFound());
