@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS books CASCADE;
 DROP TABLE IF EXISTS authors CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
+DROP TABLE IF EXISTS loan_status CASCADE;
+DROP TABLE IF EXISTS loans CASCADE;
 
 DROP SEQUENCE IF EXISTS genres_id_seq;
 
@@ -56,10 +58,12 @@ CREATE TABLE books (
   FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE RESTRICT
 );
 
-CREATE TABLE loan_statuses (
+CREATE TABLE loan_status (
   id SERIAL PRIMARY KEY,
   name VARCHAR(20) NOT NULL UNIQUE,
-  description TEXT
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE loans (
@@ -75,7 +79,7 @@ CREATE TABLE loans (
 
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
-    CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES loan_statuses(id),
+    CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES loan_status(id),
 
     CONSTRAINT unique_loan UNIQUE (user_id, book_id)
 );
