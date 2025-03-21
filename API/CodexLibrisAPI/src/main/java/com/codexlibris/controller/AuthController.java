@@ -40,22 +40,13 @@ public class AuthController {
     
     @PostMapping("/login")
     @Operation(summary = "Logejar un usuari", description = "Logejar un usuari amb el username i el seu password.")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        System.out.println("🟢 1 - Debug: Username recibido -> " + request.getUsername());
-        System.out.println("🟢 Debug: Password recibido -> " + request.getPassword());
-    
-        logger.info("🟢 1 - Recibida solicitud de login para usuario: {}", request.getUsername());
-
-        
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {     
         try {
             AuthResponse authResponse = authService.authenticate(request.getUsername(), request.getPassword());
-            logger.info("🟢 10 - Respuesta enviada con token: {}", authResponse.getToken());
-
             return ResponseEntity.ok().body(authResponse);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body(new ErrorResponse("Usuari o contrasenya incorrectes"));
         } catch (Exception e) {
-            logger.error("🔴 Error en login: ", e);
             return ResponseEntity.status(500).body(new ErrorResponse("Error intern del servidor"));
         }
     }

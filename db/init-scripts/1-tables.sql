@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS books CASCADE;
 DROP TABLE IF EXISTS authors CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
+DROP TABLE IF EXISTS loan_status CASCADE;
+DROP TABLE IF EXISTS loans CASCADE;
 
 DROP SEQUENCE IF EXISTS genres_id_seq;
 
@@ -56,26 +58,39 @@ CREATE TABLE books (
   FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE RESTRICT
 );
 
-CREATE TABLE loan_statuses (
+CREATE TABLE loan_status (
   id SERIAL PRIMARY KEY,
   name VARCHAR(20) NOT NULL UNIQUE,
-  description TEXT
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE loans (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    book_id INTEGER NOT NULL,
-    loan_date TIMESTAMP DEFAULT now() NOT NULL,
-    due_date TIMESTAMP NOT NULL,
-    return_date TIMESTAMP NULL,
-    status_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now(),
+CREATE TABLE loan (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  book_id INTEGER NOT NULL,
+  loan_date DATE DEFAULT now() NOT NULL,
+  due_date DATE NOT NULL,
+  return_date DATE NULL,
+  status_id INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now(),
 
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
-    CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES loan_statuses(id),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+  CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES loan_status(id),
 
-    CONSTRAINT unique_loan UNIQUE (user_id, book_id)
+  CONSTRAINT unique_loan UNIQUE (user_id, book_id)
+);
+
+CREATE TABLE event (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  location VARCHAR(255),
+  event_date DATE NOT NULL,
+  start_time TIME,
+  end_time TIME,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
