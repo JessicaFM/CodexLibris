@@ -35,6 +35,12 @@ netstat -ano | findstr :5432
 ```
 
 ## 🔥 API Endpoints
+
+### Swager
+```sh
+http://localhost:8080/swagger-ui/index.html
+```
+
 ### Login
 ```sh
 curl -X POST http://localhost:8080/auth/login \
