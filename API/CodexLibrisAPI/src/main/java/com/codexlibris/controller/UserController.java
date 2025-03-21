@@ -57,14 +57,14 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtenir un usuari", description = "Obtenir un usuari a partir de les dades proporcionades")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         Optional<User> user = userRepository.findById(id);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualitzar un usuari a partir de les dades proporcionades")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User userDetails) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(userDetails.getUsername());
@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return ResponseEntity.noContent().build();
