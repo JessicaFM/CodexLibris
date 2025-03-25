@@ -42,7 +42,6 @@ public class BookController {
     private final GenreRepository genreRepository;
     private final UserRepository userRepository;
 
-
     public BookController(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;

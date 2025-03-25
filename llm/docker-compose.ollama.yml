@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ollama:
+    build:
+      context: .
+    container_name: ollama-mistral
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+
+volumes:
+  ollama_models:
