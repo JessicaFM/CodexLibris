@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ollama:
+    build:
+      context: .
+    container_name: ollama-mistral
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+
+  recomender:
+    build:
+      context: .
+    container_name: recomender-llm
+    depends_on:
+      - ollama
+    ports:
+      - "8001:8001"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+volumes:
+  ollama_models:

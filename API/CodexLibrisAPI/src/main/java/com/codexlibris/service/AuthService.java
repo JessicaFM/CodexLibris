@@ -39,9 +39,13 @@ public class AuthService {
         System.out.println("🟢 4 - Auth user: " + username);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        System.out.println("🟢 4.1 - AuthenticationManager passed");
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            .orElseThrow(() -> {
+                System.out.println("🔴 4.2 - Usuari no trobat");
+                return new RuntimeException("Usuari no trobat");
+            });
 
         System.out.println("🟢 5 - In DB: " + user.getPassword());
         System.out.println("🟢 6 - In POST: " + password);
@@ -53,6 +57,8 @@ public class AuthService {
 
         String token = jwtService.generateToken(user, String.valueOf(user.getRole().getId()));
 
+        System.out.println("🟢 8 - Token generat: " + token);
+  
         return new AuthResponse(token, user.getUsername(), user.getRole().getId());
     }
 

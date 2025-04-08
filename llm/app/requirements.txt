@@ -1,0 +1,29 @@
+fastapi
+uvicorn[standard]
+requestsfrom fastapi import FastAPI, Query
+import requests
+import json
+import os
+
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama:11434")
+
+app = FastAPI()
+
+@app.get("/recomendend")
+def recomendar(texto: str = Query(..., description="Texto de entrada para recomendar libros")):
+    prompt = f"Recomiéndame libros similares a: {texto}"
+
+    response = requests.post(
+        f"{OLLAMA_HOST}/api/generate",
+        json={"model": "mistral", "prompt": prompt},
+        stream=True
+    )
+
+    resultado = ""
+    for linea in response.iter_lines():
+        if linea:
+            data = json.loads(linea.decode("utf-8"))
+            if "response" in data:
+                resultado += data["response"]
+
+    return {"respuesta": resultado.strip()}

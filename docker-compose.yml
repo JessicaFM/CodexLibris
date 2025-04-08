@@ -44,6 +44,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin
 volumes:
   postgres_data:
+  ollama_models:
 networks:
   mynetwork:
     driver: bridge

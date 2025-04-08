@@ -42,7 +42,6 @@ public class BookController {
     private final GenreRepository genreRepository;
     private final UserRepository userRepository;
 
-
     public BookController(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
@@ -80,6 +79,7 @@ public class BookController {
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    
     @PostMapping
     @Operation(summary = "Crear un nou llibre", description = "Crear un nou llibre amb les dades proporcionades")
     public ResponseEntity<?> createBook(@Valid @RequestBody BookDTO bookDTO, BindingResult result) {
@@ -92,9 +92,9 @@ public class BookController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
+        String username = userDetails.getUsername();
 
-        User authUser = userRepository.findByEmail(email)
+        User authUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Error: No s'ha trobat l'usuari autenticat"));
 
         if (authUser.getRole().getId() != 1) {
@@ -113,8 +113,11 @@ public class BookController {
         book.setIsbn(bookDTO.getIsbn());
         book.setGenre(genre);
         book.setAvailable(bookDTO.getAvailable());
+        book.setPublished_date(bookDTO.getPublishedDate());
 
         Book savedBook = bookRepository.save(book);
         return ResponseEntity.ok(savedBook);
     }
+    
+
 }
