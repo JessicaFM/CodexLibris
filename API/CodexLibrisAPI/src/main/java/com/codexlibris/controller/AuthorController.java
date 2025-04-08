@@ -87,4 +87,14 @@ public class AuthorController {
         Author savedAuthor = authorRepository.save(author);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAuthor(@PathVariable Integer id) {
+        if (authorRepository.existsById(id)) {
+            authorRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

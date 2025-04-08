@@ -181,5 +181,15 @@ public class LoanController {
         loanRepository.save(loan);
         return ResponseEntity.ok("Reserva retornada correctament");
     }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGenre(@PathVariable Integer id) {
+        if (loanRepository.existsById(id)) {
+            loanRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
