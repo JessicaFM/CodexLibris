@@ -4,15 +4,15 @@
  */
 package com.codexlibris.service;
 
+import com.codexlibris.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Service;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,13 +24,18 @@ import java.util.Set;
 @Service
 public class JwtService {
 
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 🔹 Genera una clave segura automáticamente
-    private final Set<String> blacklistedTokens = new HashSet<>(); // Stores invalid tokens
+    private static final String SECRET = "codexcodexcodexcodexcodexcodex12";
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    private final Set<String> blacklistedTokens = new HashSet<>();
 
-    public String generateToken(UserDetails userDetails, String role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        return createToken(claims, userDetails.getUsername());
+    public String generateToken(User user, String roleId) {
+        return Jwts.builder()
+            .setSubject(user.getUsername())
+            .claim("role", roleId)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+            .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+            .compact();
     }
     
     private String createToken(Map<String, Object> claims, String subject) {
@@ -38,7 +43,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SECRET_KEY)
                 .compact();
     }
@@ -62,7 +67,7 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-            .setSigningKey(SECRET_KEY)
+            .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8)))
             .build()
             .parseClaimsJws(token)
             .getBody();

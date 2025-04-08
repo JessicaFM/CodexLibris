@@ -24,7 +24,7 @@ public class BookDTO {
 
     private LocalDateTime publishedDate;
 
-    @NotBlank(message = "El genere del llibre es obligatori")
+    @NotNull(message = "El genere del llibre es obligatori")
     private Integer genreId;
 
     private Boolean available;

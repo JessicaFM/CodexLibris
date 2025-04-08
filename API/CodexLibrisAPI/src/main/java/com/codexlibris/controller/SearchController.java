@@ -33,6 +33,7 @@ public class SearchController {
         this.authorRepository = authorRepository;
     }
 
+    /*
     @GetMapping("/")
     @Operation(summary = "Obtenir llibres o autors per string")
     public ResponseEntity<?> search(@RequestParam String query) {
@@ -45,4 +46,5 @@ public class SearchController {
 
         return ResponseEntity.ok(result);
     }
+*/
 }

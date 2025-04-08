@@ -15,4 +15,4 @@ else
 fi
 
 # Dejamos el servidor activo en primer plano
-tail -f /dev/null
+wait $OLLAMA_PI

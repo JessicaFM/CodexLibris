@@ -9,6 +9,7 @@ import com.codexlibris.dto.BookSearchResponseDTO;
  *
  * @author jessica
  */
+/*
 @Service
 public class OpenLibraryClient {
 
@@ -30,3 +31,4 @@ public class OpenLibraryClient {
                 .block();
     }
 }
+*/

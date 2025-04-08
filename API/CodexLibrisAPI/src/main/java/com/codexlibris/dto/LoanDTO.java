@@ -1,9 +1,7 @@
 package com.codexlibris.dto;
 
-import com.codexlibris.model.Book;
-import com.codexlibris.model.LoanStatus;
-import com.codexlibris.model.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,20 +13,21 @@ import java.time.LocalDate;
 @Data
 public class LoanDTO {
 
-    @NotBlank(message = "La data de reserva es obligatoria")
+    @NotNull(message = "La data de reserva és obligatòria")
     private LocalDate loan_date;
 
-    @NotBlank(message = "La data de fi de reserva es obligatoria")
+    @NotNull(message = "La data de fi de reserva és obligatòria")
     private LocalDate due_date;
 
+    @NotNull(message = "La data del préstec no pot ser nul·la")
     private LocalDate return_date;
 
-    @NotBlank(message = "El usuari de la reserva es obligatori")
+    @NotNull(message = "El usuari de la reserva es obligatori")
     private Integer userId;
 
-    @NotBlank(message = "El llibre de la reserva es obligarori")
+    @NotNull(message = "El llibre de la reserva es obligarori")
     private Integer bookId;
 
-    @NotBlank(message = "El estatus de la reserva es obligatori")
+    @NotNull(message = "El estatus de la reserva es obligatori")
     private Integer statusId;
 }
