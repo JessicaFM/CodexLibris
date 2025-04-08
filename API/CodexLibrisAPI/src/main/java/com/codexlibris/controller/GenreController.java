@@ -94,4 +94,14 @@ public class GenreController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al desar el gènere");
         }
     }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGenre(@PathVariable Integer id) {
+        if (genreRepository.existsById(id)) {
+            genreRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

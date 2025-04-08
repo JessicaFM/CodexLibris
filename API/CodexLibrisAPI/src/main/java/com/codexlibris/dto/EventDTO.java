@@ -1,6 +1,7 @@
 package com.codexlibris.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ public class EventDTO {
 
     private String location;
 
-    @NotBlank(message = "La data del event es obligatoria")
+    @NotNull(message = "La data del event es obligatoria")
     private LocalDate event_date;
 
     private LocalTime start_time;
