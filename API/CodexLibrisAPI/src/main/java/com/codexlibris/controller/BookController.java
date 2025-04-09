@@ -69,6 +69,7 @@ public class BookController {
                     book.setAuthor(bookDetails.getAuthor());
                     book.setIsbn(bookDetails.getIsbn());
                     book.setGenre(bookDetails.getGenre());
+                    book.setAvailable(bookDetails.getAvailable());
                     if(bookDetails.getPublished_date() != null) {
                         book.setPublished_date(bookDetails.getPublished_date());
                     }
