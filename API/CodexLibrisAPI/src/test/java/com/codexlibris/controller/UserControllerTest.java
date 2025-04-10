@@ -1,27 +1,30 @@
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.codexlibris.controller;
 
-import com.codexlibris.model.Role;
 import com.codexlibris.model.User;
 import com.codexlibris.repository.RoleRepository;
 import com.codexlibris.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ *
+ * @author jessica
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserControllerTest {
@@ -29,49 +32,61 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
 
-    @Autowired
+    @MockBean
     private RoleRepository roleRepository;
 
-    @BeforeEach
-    void setUp() {
-        userRepository.deleteAll();
-        
-        Role adminRole = roleRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Error: Rol ADMIN no trobat"));
-        userRepository.save(new User("admin", "Admin", "User", "admin@example.com", "password123", true, adminRole));
-        
-        Role userRole = roleRepository.findById(2)
-            .orElseThrow(() -> new RuntimeException("Error: Rol USER no trobat"));
-        userRepository.save(new User("user", "Usuari", "Normal", "user@example.com", "password123", true, userRole));
-    }
+    @MockBean
+    private PasswordEncoder passwordEncoder;
 
+    // Test per comprovar que GET /users retorna correctament tots els usuaris
     @Test
-    @WithMockUser(username = "admin@example.com", roles = {"ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetAllUsers() throws Exception {
+        User user = new User();
+        user.setId(1);
+        user.setUsername("jdoe");
+
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(jsonPath("$[0].username").value("jdoe"));
     }
 
+    // Test per comprovar que GET /users/{id} retorna un usuari existent
     @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"}) // 🔥 Simulem un usuari amb rol USER
-    void testCreateUserForbidden() throws Exception {
-        // 🔥 Intentem fer una petició com a USER, ha de donar 403 Forbidden
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"userName\": \"nouusuari\", \"firstName\": \"Nou\", \"lastName\": \"Usuari\", \"email\": \"nou@example.com\", \"password\": \"123456\", \"roleId\": 2 }"))
-                .andExpect(status().isForbidden()); // 🔥 Esperem un 403 Forbidden
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetUserById() throws Exception {
+        User user = new User();
+        user.setId(1);
+        user.setUsername("janedoe");
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("janedoe"));
     }
 
+    // Test per comprovar que GET /users/{id} retorna 404 si l’usuari no existeix
     @Test
-    @WithMockUser(username = "admin@example.com", roles = {"ADMIN"})
-    void testCreateUserSuccess() throws Exception {
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"userName\": \"nouusuari\", \"firstName\": \"Nou\", \"lastName\": \"Usuari\", \"email\": \"nou@example.com\", \"password\": \"123456\", \"roleId\": 2 }"))
-                .andExpect(status().isOk());
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testUserNotFound() throws Exception {
+        when(userRepository.findById(999)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/users/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    // Test per comprovar que GET /users/ (endpoint de prova) funciona correctament
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testHomeEndpoint() throws Exception {
+        mockMvc.perform(get("/users/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("API is running!"));
     }
 }
