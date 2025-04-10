@@ -26,6 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.hasSize;
 import org.springframework.security.test.context.support.WithMockUser;
 
+/**
+ *
+ * @author jessica
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 public class BookControllerTest {
@@ -42,6 +46,7 @@ public class BookControllerTest {
     @Autowired
     private AuthorRepository authorRepository;
 
+    // Configura les dades abans de cada test (neteja i crea un llibre amb autor i gènere)
     @BeforeEach
     void setUp() {
         bookRepository.deleteAll();
@@ -62,6 +67,7 @@ public class BookControllerTest {
         bookRepository.save(book1);
     }
 
+    // Test per comprovar que GET /books retorna tots els llibres
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     void testGetAllBooks() throws Exception {
@@ -72,6 +78,7 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Harry Potter i la pedra filosofal"));
     }
 
+    // Test per comprovar que GET /books/{id} retorna un llibre existent
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     void testGetBookById() throws Exception {
@@ -81,6 +88,7 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.title").value("Harry Potter i la pedra filosofal"));
     }
 
+    // Test per comprovar que GET /books/{id} retorna 404 si el llibre no existeix
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     void testGetBookByIdNotFound() throws Exception {

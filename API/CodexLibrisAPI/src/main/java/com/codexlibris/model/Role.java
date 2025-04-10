@@ -6,6 +6,7 @@ package com.codexlibris.model;
 
 import jakarta.persistence.*;
 import java.util.Set;
+import lombok.Data;
 
 /**
  *
@@ -13,6 +14,7 @@ import java.util.Set;
  */
 
 @Entity
+@Data
 @Table(name = "roles")
 public class Role {
     
