@@ -1,5 +1,7 @@
 package com.codexlibris.controller;
 
+import com.codexlibris.dto.AuthorSearchDTO;
+import com.codexlibris.dto.BookSearchDTO;
 import com.codexlibris.repository.AuthorRepository;
 import com.codexlibris.repository.BookRepository;
 import com.codexlibris.model.Book;
@@ -33,18 +35,42 @@ public class SearchController {
         this.authorRepository = authorRepository;
     }
 
-    /*
+    
     @GetMapping("/")
     @Operation(summary = "Obtenir llibres o autors per string")
     public ResponseEntity<?> search(@RequestParam String query) {
         List<Book> books = bookRepository.searchByTitle(query);
         List<Author> authors = authorRepository.searchByAuthor(query);
+        
+        List<BookSearchDTO> bookDTOs = books.stream()
+        .map(book -> {
+            BookSearchDTO dto = new BookSearchDTO();
+            dto.setId(book.getId());
+            dto.setTitle(book.getTitle());
+            dto.setIsbn(book.getIsbn());
+            dto.setAvailable(book.getAvailable());
+            dto.setAuthorName(book.getAuthor().getName());
+            dto.setGenreName(book.getGenre().getName());
+            return dto;
+        })
+        .toList();
+
+         List<AuthorSearchDTO> authorDTOs = authors.stream()
+        .map(author -> {
+            AuthorSearchDTO dto = new AuthorSearchDTO();
+            dto.setId(author.getId());
+            dto.setName(author.getName());
+            dto.setNationality(author.getNationality());
+            return dto;
+        })
+        .toList();
+
 
         Map<String, Object> result = new HashMap<>();
-        result.put("books", books);
-        result.put("authors", authors);
+        result.put("books", bookDTOs);
+        result.put("authors", authorDTOs);
 
         return ResponseEntity.ok(result);
     }
-*/
+
 }
