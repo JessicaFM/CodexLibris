@@ -1,6 +1,6 @@
 package com.codexlibris.controller;
 
-/*
+
 import com.codexlibris.dto.BookSearchResponseDTO;
 import com.codexlibris.service.OpenLibraryClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author jessica
  */
-/*
+
 @RestController
 @RequestMapping("/external-books")
 @Tag(name = "External Books", description = "Endpoints per a la consulta externes de llibres")
@@ -30,4 +30,3 @@ public class ExternalBookController {
         return ResponseEntity.ok(response);
     }
 }
-*/
