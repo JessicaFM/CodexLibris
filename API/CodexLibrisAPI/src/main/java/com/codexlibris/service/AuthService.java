@@ -59,7 +59,7 @@ public class AuthService {
 
         System.out.println("🟢 8 - Token generat: " + token);
   
-        return new AuthResponse(token, user.getUsername(), user.getRole().getId());
+        return new AuthResponse(token, user.getUsername(), user.getRole().getId(), user.getId());
     }
 
 
