@@ -1,7 +1,7 @@
 package com.codexlibris.controller;
 
 
-import com.codexlibris.dto.BookSearchResponseDTO;
+import com.codexlibris.dto.BookSearchExternalResponseDTO;
 import com.codexlibris.service.OpenLibraryClient;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class ExternalBookController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchBooks(@RequestParam String q) {
-        BookSearchResponseDTO response = openLibraryClient.searchBooks(q);
+        BookSearchExternalResponseDTO response = openLibraryClient.searchBooks(q);
         return ResponseEntity.ok(response);
     }
 }
