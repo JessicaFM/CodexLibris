@@ -8,6 +8,7 @@ package com.codexlibris.controller;
 import com.codexlibris.model.User;
 import com.codexlibris.model.Role;
 import com.codexlibris.dto.UserDTO;
+import com.codexlibris.dto.UserResponseDTO;
 import com.codexlibris.repository.RoleRepository;
 import com.codexlibris.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -43,16 +44,11 @@ public class UserController {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
+    
     @GetMapping
     @Operation(summary = "Obtenir tots els usuaris", description = "Retorna la llista completa de usuaris registrats.")
     public List<User> getAllUsers() {
         return userRepository.findAll();
-    }
-    
-    @GetMapping("/")
-    public String home() {
-        return "API is running!";
     }
 
     @GetMapping("/{id}")
@@ -135,4 +131,5 @@ public class UserController {
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
+    
 }

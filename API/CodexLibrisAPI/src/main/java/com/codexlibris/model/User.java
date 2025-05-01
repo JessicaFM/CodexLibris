@@ -106,4 +106,8 @@ public class User implements UserDetails {
         this.isActive = isActive;
         this.role = role;
     }
+    
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private java.util.List<Loan> loans;
 }
