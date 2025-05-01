@@ -55,59 +55,62 @@ public class LoanController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtenir una reserva a partir de un ID")
-    public ResponseEntity<Loan> getLoanById(@PathVariable Integer id) {
-        Optional<Loan> loans = loanRepository.findById(id);
-        return loans.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<LoanResponseDTO> getLoanById(@PathVariable Integer id) {
+        return loanService.getLoanById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualitzar una reserva amb les dades proporcionades")
     public ResponseEntity<?> updateLoan(@PathVariable Integer id, @Valid @RequestBody LoanDTO loanDTO) {
-        return loanRepository.findById(id)
-            .map(existingLoan -> {
+    return loanRepository.findById(id)
+        .map(existingLoan -> {
 
-                boolean alreadyExists = loanRepository.existsByUserIdAndBookIdAndIdNot(
-                        loanDTO.getUserId(), loanDTO.getBookId(), id
-                );
+            boolean alreadyExists = loanRepository.existsByUserIdAndBookIdAndIdNot(
+                    loanDTO.getUserId(), loanDTO.getBookId(), id
+            );
 
-                if (alreadyExists) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body(Map.of("error", "Ja existeix una altra reserva amb aquest llibre i usuari."));
-                }
+            if (alreadyExists) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "Ja existeix una altra reserva amb aquest llibre i usuari."));
+            }
 
-                boolean overlapping = loanRepository.existsOverlappingLoanForBook(
-                        loanDTO.getBookId(),
-                        loanDTO.getLoan_date(),
-                        loanDTO.getDue_date(),
-                        id
-                );
+            boolean overlapping = loanRepository.existsOverlappingLoanForBook(
+                    loanDTO.getBookId(),
+                    loanDTO.getLoan_date(),
+                    loanDTO.getDue_date(),
+                    id
+            );
 
-                if (overlapping) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body(Map.of("error", "Aquest llibre ja està reservat en aquest període."));
-                }
+            if (overlapping) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "Aquest llibre ja està reservat en aquest període."));
+            }
 
-                Book book = bookRepository.findById(loanDTO.getBookId())
-                        .orElseThrow(() -> new IllegalArgumentException("Error: el llibre no existeix"));
+            Book book = bookRepository.findById(loanDTO.getBookId())
+                    .orElseThrow(() -> new IllegalArgumentException("Error: el llibre no existeix"));
 
-                User user = userRepository.findById(loanDTO.getUserId())
-                        .orElseThrow(() -> new IllegalArgumentException("Error: l'usuari no existeix"));
+            User user = userRepository.findById(loanDTO.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("Error: l'usuari no existeix"));
 
-                LoanStatus loanStatus = loanStatusRepository.findById(loanDTO.getStatusId())
-                        .orElseThrow(() -> new IllegalArgumentException("Error: l'estat de la reserva no existeix"));
+            LoanStatus loanStatus = loanStatusRepository.findById(loanDTO.getStatusId())
+                    .orElseThrow(() -> new IllegalArgumentException("Error: l'estat de la reserva no existeix"));
 
-                existingLoan.setBook(book);
-                existingLoan.setUser(user);
-                existingLoan.setLoanStatus(loanStatus);
-                existingLoan.setLoan_date(loanDTO.getLoan_date());
-                existingLoan.setDue_date(loanDTO.getDue_date());
-                existingLoan.setReturn_date(loanDTO.getReturn_date());
+            existingLoan.setBook(book);
+            existingLoan.setUser(user);
+            existingLoan.setLoanStatus(loanStatus);
+            existingLoan.setLoan_date(loanDTO.getLoan_date());
+            existingLoan.setDue_date(loanDTO.getDue_date());
+            existingLoan.setReturn_date(loanDTO.getReturn_date());
 
-                loanRepository.save(existingLoan);
-                return ResponseEntity.ok(existingLoan);
+            Loan updatedLoan = loanRepository.save(existingLoan);
+            LoanResponseDTO response = loanService.convertToLoanResponse(updatedLoan); // <-- usa método del service
 
-            }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "No s'ha trobat la reserva amb l'id especificat.")));
+            return ResponseEntity.ok(response);
+
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "No s'ha trobat la reserva amb l'id especificat.")));
     }
 
 

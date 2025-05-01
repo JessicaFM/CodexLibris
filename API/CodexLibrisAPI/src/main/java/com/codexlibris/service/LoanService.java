@@ -2,7 +2,6 @@ package com.codexlibris.service;
 
 import com.codexlibris.dto.GenreDTO;
 import com.codexlibris.dto.LoanResponseDTO;
-import com.codexlibris.dto.LoanStatusDTO;
 import com.codexlibris.model.Loan;
 import com.codexlibris.model.LoanStatus;
 import com.codexlibris.model.User;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LoanService {
@@ -25,8 +25,13 @@ public class LoanService {
                 .map(this::convertToLoanResponse)
                 .toList();
     }
+    
+    public Optional<LoanResponseDTO> getLoanById(Integer id) {
+        return loanRepository.findById(id)
+                .map(this::convertToLoanResponse);
+    }
 
-    private LoanResponseDTO convertToLoanResponse(Loan loan) {
+    public LoanResponseDTO convertToLoanResponse(Loan loan) {
         LoanResponseDTO loanResponseDTO = new LoanResponseDTO();
 
         loanResponseDTO.setId(loan.getId());
@@ -56,5 +61,7 @@ public class LoanService {
 
         return loanResponseDTO;
     }
+    
+    
 
 }
