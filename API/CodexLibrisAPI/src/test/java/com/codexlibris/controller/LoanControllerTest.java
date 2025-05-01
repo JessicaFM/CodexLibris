@@ -50,6 +50,22 @@ public class LoanControllerTest {
 
     @MockBean
     private LoanService loanService;
+    
+    private LoanResponseDTO createMockLoanResponseDTO() {
+        LoanResponseDTO loan = new LoanResponseDTO();
+        loan.setId(1);
+        loan.setLoan_date(LocalDate.of(2024, 4, 10));
+        loan.setDue_date(LocalDate.of(2024, 4, 20));
+        loan.setBook_title("El Principito");
+        loan.setBook_id(100);
+        loan.setUser_id(10);
+        loan.setUser_name("Saint-Exupéry");
+        loan.setUser_first_name("Antoine");
+        loan.setUser_email("antoine@literatura.com");
+        loan.setLoan_status_id(1);
+        loan.setLoan_status_name("Activa");
+        return loan;
+    }
 
     // Test per comprovar que l'endpoint GET /loans retorna correctament totes les reserves
     @Test
@@ -82,16 +98,16 @@ public class LoanControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetLoanById() throws Exception {
-        Loan loan = new Loan();
-        loan.setId(1);
-        loan.setLoan_date(LocalDate.of(2024, 4, 10));
-        loan.setDue_date(LocalDate.of(2024, 4, 20));
+        LoanResponseDTO loan = createMockLoanResponseDTO();
 
-        when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
+        when(loanService.getLoanById(1)).thenReturn(Optional.of(loan));
 
         mockMvc.perform(get("/loans/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.book_title").value("El Principito"))
+                .andExpect(jsonPath("$.user_first_name").value("Antoine"))
+                .andExpect(jsonPath("$.loan_status_name").value("Activa"));
     }
     
     // Test per comprovar que GET /loans/{id} retorna 404 si la reserva no existeix
