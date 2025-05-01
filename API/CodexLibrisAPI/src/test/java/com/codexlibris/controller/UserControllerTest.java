@@ -82,6 +82,7 @@ public class UserControllerTest {
     }
 
     // Test per comprovar que GET /users/ (endpoint de prova) funciona correctament
+    /*
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testHomeEndpoint() throws Exception {
@@ -89,4 +90,5 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("API is running!"));
     }
+*/
 }

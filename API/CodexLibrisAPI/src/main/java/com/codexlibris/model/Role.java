@@ -29,6 +29,7 @@ public class Role {
     private String description;
 
     @OneToMany(mappedBy = "role")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<User> users;
 
     public Integer getId() { return id; }
