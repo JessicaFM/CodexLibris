@@ -2,24 +2,37 @@ version: '3.8'
 
 services:
   ollama:
-    build:
-      context: .
-    container_name: ollama-mistral
-    restart: unless-stopped
+    image: ollama/ollama:latest
+    container_name: ollama
     ports:
       - "11434:11434"
     volumes:
       - ollama_models:/root/.ollama
+    networks:
+      - llm_net
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 5 &&
+        ollama pull gemma:2b &&
+        wait
+      "
 
   recomender:
     build:
-      context: .
+      context: ./recomender
     container_name: recomender-llm
     depends_on:
       - ollama
     ports:
       - "8001:8001"
+    networks:
+    - llm_net
     environment:
       OLLAMA_HOST: http://ollama:11434
+
 volumes:
   ollama_models:
+
+networks:
+  llm_net:
