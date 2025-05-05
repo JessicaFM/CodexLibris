@@ -34,16 +34,23 @@ sudo lsof -i :5432
 netstat -ano | findstr :5432
 ```
 
+## 🔐 HTTPS Access Notes
+The API is served over HTTPS at https://localhost
+
+Since it uses a self-signed certificate, curl commands require the -k flag to skip SSL verification
+
+In a browser, you may need to accept the certificate manually the first time
+
 ## 🔥 API Endpoints
 
 ### Swager
 ```sh
-http://localhost:8080/swagger-ui/index.html
+https://localhost/swagger-ui/index.html
 ```
 
 ### Login
 ```sh
-curl -X POST http://localhost:8080/auth/login \
+curl -X POST https://localhost/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username": "admin", "password": "admin"}'
 ```
@@ -59,12 +66,12 @@ curl -X POST http://localhost:8080/auth/login \
 
 ### Users
 ```sh
-curl -X GET http://localhost:8080/user/1 \
+curl -X GET https://localhost/user/1 \
      -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ```sh
-curl -X GET http://localhost:8080/users \
+curl -X GET https://localhost/users \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
@@ -72,19 +79,19 @@ curl -X GET http://localhost:8080/users \
 
 ### Books
 ```sh
-curl -X GET http://localhost:8080/books \
+curl -X GET https://localhost:8080/books \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
 
 ```sh
-curl -X GET http://localhost:8080/books/1 \
+curl -X GET https://localhost:8080/books/1 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
 
 ```sh
-curl -X POST http://localhost:8080/books \
+curl -X POST https://localhost:8080/books \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
@@ -98,7 +105,7 @@ curl -X POST http://localhost:8080/books \
 ```
 
 ```sh
-curl -X PUT http://localhost:8080/books/1 \
+curl -X PUT https://localhost:8080/books/1 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
@@ -114,19 +121,19 @@ curl -X PUT http://localhost:8080/books/1 \
 
 ### Authors
 ```sh
-curl -X GET http://localhost:8080/authors \
+curl -X GET https://localhost:8080/authors \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
 
 ```sh
-curl -X GET http://localhost:8080/authors/1 \
+curl -X GET https://localhost:8080/authors/1 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
 
 ```sh
-curl -X POST http://localhost:8080/authors \
+curl -X POST https://localhost:8080/authors \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
@@ -137,7 +144,7 @@ curl -X POST http://localhost:8080/authors \
 ```
 
 ```sh
-curl -X PUT http://localhost:8080/authors/11 \
+curl -X PUT https://localhost:8080/authors/11 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
@@ -149,19 +156,19 @@ curl -X PUT http://localhost:8080/authors/11 \
 
 ### Genres
 ```sh
-curl -X GET http://localhost:8080/genres \
+curl -X GET https://localhost:8080/genres \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
 
 ```sh
-curl -X GET http://localhost:8080/genres/1 \
+curl -X GET https://localhost:8080/genres/1 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json"
 ```
 
 ```sh
-curl -X POST http://localhost:8080/genres \
+curl -X POST https://localhost:8080/genres \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
@@ -171,7 +178,7 @@ curl -X POST http://localhost:8080/genres \
 ```
 
 ```sh
-curl -X PUT http://localhost:8080/genres/5 \
+curl -X PUT https://localhost:8080/genres/5 \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
