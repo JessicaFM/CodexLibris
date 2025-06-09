@@ -28,7 +28,7 @@ public class LLMController {
     private final RestTemplate restTemplate;
 
     @Value("${llm.api.url}")
-    private String fastApiUrl;
+    private String flaskApiUrl;
 
     public LLMController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -44,11 +44,11 @@ public class LLMController {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(Map.of("text", text), headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(fastApiUrl, entity, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(flaskApiUrl, entity, String.class);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al conectar con el servicio LLM: " + e.getMessage());
+                    .body("Error connexió del servei LLM: " + e.getMessage());
         }
     }
 }
