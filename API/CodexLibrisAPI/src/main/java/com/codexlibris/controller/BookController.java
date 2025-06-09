@@ -5,6 +5,7 @@
 package com.codexlibris.controller;
 
 import com.codexlibris.dto.BookDTO;
+import com.codexlibris.dto.BookUpdateDTO;
 import com.codexlibris.model.Author;
 import com.codexlibris.model.Book;
 import com.codexlibris.model.Genre;
@@ -62,24 +63,24 @@ public class BookController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualitzar un llibre a partir de les dades proporcionades")
-    public ResponseEntity<Book> updateBook(@PathVariable Integer id, @RequestBody Book bookDetails) {
+    public ResponseEntity<?> updateBook(@PathVariable Integer id, @RequestBody BookUpdateDTO bookDTO) {
         return bookRepository.findById(id)
                 .map(book -> {
-                    book.setTitle(bookDetails.getTitle());
-                    book.setAuthor(bookDetails.getAuthor());
-                    book.setIsbn(bookDetails.getIsbn());
-                    book.setGenre(bookDetails.getGenre());
-                    book.setAvailable(bookDetails.getAvailable());
-                    if(bookDetails.getPublished_date() != null) {
-                        book.setPublished_date(bookDetails.getPublished_date());
-                    }
+                    book.setTitle(bookDTO.getTitle());
+                    book.setIsbn(bookDTO.getIsbn());
+                    book.setAvailable(bookDTO.getAvailable());
+                    book.setPublished_date(bookDTO.getPublishedDate());
+
+                    // buscar entidades por ID
+                    authorRepository.findById(bookDTO.getAuthorId()).ifPresent(book::setAuthor);
+                    genreRepository.findById(bookDTO.getGenreId()).ifPresent(book::setGenre);
+
                     book.setUpdated_at(LocalDateTime.now());
-                    
+
                     bookRepository.save(book);
                     return ResponseEntity.ok(book);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
     
     @PostMapping
     @Operation(summary = "Crear un nou llibre", description = "Crear un nou llibre amb les dades proporcionades")

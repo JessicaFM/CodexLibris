@@ -15,16 +15,13 @@ class RecomendRequest(BaseModel):
 
 @app.post("/recomender")
 def recomend(data: RecomendRequest):
-    #prompt = f"Recomiéndame libros parecidos a: {data.text}" "Devuelve el resultado como un array JSON de objetos con las claves: titulo, autor y anio."
-
     prompt = (
-        "Actúa como un experto en literatura. "
-        f"A partir de esta información: {data.text}, "
-        "recomienda al menos 5 libros relacionados. "
-        "Devuelve el resultado en formato JSON como un array de objetos, "
-        "cada uno con: titulo, autor y anio. "
-        "Si no puedes devolver JSON, responde en lista clara tipo markdown."
+        f'Dado: "{data.text}".\n'
+        "Recomienda 3 libros similares.\n"
+        "Devuelve solo un array JSON con objetos tipo: "
+        '[{"title": "string", "author": "string", "year": 2000}].'
     )
+
 
     try:
         response = requests.post(
@@ -34,9 +31,11 @@ def recomend(data: RecomendRequest):
                 "messages": [
                     {"role": "user", "content": prompt}
                 ],
-                "stream": False
+                "stream": False,
+                "temperature": 0.3,
+                "top_p": 0.8
             },
-            timeout=60
+            timeout=180
         )
 
         if response.status_code != 200:

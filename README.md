@@ -66,7 +66,7 @@ curl -X POST https://localhost/auth/login \
 
 ### Users
 ```sh
-curl -X GET https://localhost/user/1 \
+curl -k -X GET https://localhost/user/1 \
      -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -186,3 +186,49 @@ curl -X PUT https://localhost:8080/genres/5 \
           "description": "Gènere narratiu gràfic, amb vinyetes i diàlegs curts."
          }'
 ```
+
+## 🧠 Optional: Enable LLM Recommendations
+This project includes an optional book recommendation system powered by a local LLM (Large Language Model).
+
+### ▶️ How to Enable LLM Integration
+Navigate to the llm/ folder in the project root:
+```sh
+cd llm
+```
+
+Start the LLM service using Docker:
+```sh
+docker-compose up --build
+```
+
+Once running, you can use the LLM-powered recommendation endpoint via:
+
+```sh
+curl -k -X POST https://localhost/api/llm/recomender \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "Harry Potter"
+  }'
+```
+
+✅ This will return a list of book recommendations in JSON format, powered by the local AI model.
+
+### Example Response
+```json
+{
+  "results": [
+    {
+      "title": "Harry Potter and the Philosopher's Stone",
+      "author": "J. K. Rowling",
+      "year": 1997
+    },
+    {
+      "title": "Harry Potter and the Chamber of Secrets",
+      "author": "J. K. Rowling",
+      "year": 1998
+    }
+  ]
+}
+```
+💡 The model may take a few seconds to respond. To improve speed, the prompt and model settings have been optimized.
