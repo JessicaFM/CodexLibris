@@ -5,6 +5,7 @@
 package com.codexlibris.controller;
 
 import com.codexlibris.dto.BookDTO;
+import com.codexlibris.dto.BookDetailsDTO;
 import com.codexlibris.dto.BookUpdateDTO;
 import com.codexlibris.model.Author;
 import com.codexlibris.model.Book;
@@ -28,6 +29,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,6 +50,7 @@ public class BookController {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final UserRepository userRepository;
+    private static final Logger log = LoggerFactory.getLogger(BookController.class);
 
     public BookController(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
@@ -52,7 +61,36 @@ public class BookController {
 
     @GetMapping
     @Operation(summary = "Obtenir el lllistat de tots els llibres")
-    public  List<Book> getAllBooks() { return bookRepository.findAll(); }
+    public  ResponseEntity<List<BookDTO>> getAllBooks(
+        @RequestParam(defaultValue = "0") int offset,
+        @RequestParam(defaultValue = "10") int limit) {
+
+        log.info("Obtenint llibres amb offset={} i limit={}", offset, limit);
+
+        int page = offset / limit;
+        
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("title").ascending());
+        
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        
+        int skip = offset % limit;
+
+        List<BookDTO> dtosBooks = bookPage.getContent().stream()
+                .skip(skip)
+                .limit(limit)
+                .map(book -> {
+                    BookDTO dto = new BookDTO();
+                    dto.setTitle(book.getTitle());
+                    dto.setIsbn(book.getIsbn());
+                    
+                    return dto;
+                })
+                .toList();
+
+        log.info("Retornats {} llibres", dtosBooks.size());
+
+        return ResponseEntity.ok(dtosBooks);
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtenir un llibre a partir de un ID")
@@ -81,16 +119,20 @@ public class BookController {
                     return ResponseEntity.ok(book);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
-    
+
     @PostMapping
     @Operation(summary = "Crear un nou llibre", description = "Crear un nou llibre amb les dades proporcionades")
     public ResponseEntity<?> createBook(@Valid @RequestBody BookDTO bookDTO, BindingResult result) {
         if (result.hasErrors()) {
+            log.warn("Error de validació creant llibre: {}", result.getAllErrors());
+
             List<String> errors = result.getAllErrors().stream()
                     .map(error -> error.getDefaultMessage())
                     .toList();
             return ResponseEntity.badRequest().body(errors);
         }
+
+        log.info("Intentant crear llibre amb títol: {}", bookDTO.getTitle());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -118,6 +160,9 @@ public class BookController {
         book.setPublished_date(bookDTO.getPublishedDate());
 
         Book savedBook = bookRepository.save(book);
+
+        log.info("Llibre creat amb ID: {}", savedBook.getId());
+        
         return ResponseEntity.ok(savedBook);
     }
     
@@ -130,5 +175,19 @@ public class BookController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    
+    @GetMapping("/{id}/details")
+    public ResponseEntity<BookDetailsDTO> getBookDetailsBydId(@PathVariable int id) {
+        return bookRepository.findById(id)
+            .map(book -> {
+                BookDetailsDTO dto = new BookDetailsDTO();
+                dto.setTitle(book.getTitle());
+                dto.setIsbn(book.getIsbn());
+                return ResponseEntity.ok(dto);
+            })
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
 
 }

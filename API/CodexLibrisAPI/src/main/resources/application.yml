@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: codexlibris-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/codexlibris
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: 60000
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      minimum-idle: 1
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+springdoc:
+  swagger-ui:
+    use-root-path: true
+    url: /v3/api-docs
+
+llm:
+  api:
+    url: http://host.docker.internal:8001/recomender
