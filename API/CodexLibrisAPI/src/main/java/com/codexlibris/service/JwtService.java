@@ -88,5 +88,10 @@ public class JwtService {
     public boolean isTokenBlacklisted(String token) {
         return blacklistedTokens.contains(token);
     }
+
+    public boolean isTokenValid(String token, org.springframework.security.core.userdetails.UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && validateToken(token);
+    }
 }
 
