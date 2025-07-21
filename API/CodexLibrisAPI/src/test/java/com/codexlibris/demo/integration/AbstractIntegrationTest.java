@@ -4,6 +4,12 @@
  */
 package com.codexlibris.demo.integration;
 
+import com.codexlibris.model.Role;
+import com.codexlibris.repository.RoleRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -18,7 +24,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @SpringBootTest
 @Testcontainers
-@ActiveProfiles("test") // to use test files!
+@ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractIntegrationTest {
 
     @Container
@@ -34,5 +41,19 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    }
+    
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @BeforeAll
+    void setupInitialData() {
+        if (!roleRepository.existsById(1)) {
+            Role adminRole = new Role();
+            adminRole.setId(1); // ⚠️ Este ID es importante para que tus tests no fallen
+            adminRole.setName("ADMIN");
+            adminRole.setDescription("Administrador");
+            roleRepository.save(adminRole);
+        }
     }
 }

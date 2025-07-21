@@ -15,6 +15,7 @@ import com.codexlibris.repository.BookRepository;
 import com.codexlibris.repository.GenreRepository;
 import com.codexlibris.repository.RoleRepository;
 import com.codexlibris.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,13 +31,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.hasSize;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  *
  * @author jessica
  */
 @SpringBootTest
+@Transactional
+@ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 public class BookControllerTest extends AbstractIntegrationTest {
 
@@ -84,10 +90,12 @@ public class BookControllerTest extends AbstractIntegrationTest {
         Book book1 = new Book("Harry Potter i la pedra filosofal", author1, "123456789", LocalDateTime.of(1997, 6, 26, 0, 0), fantasy, true);
         bookRepository.save(book1);
         
-        Role adminRole = new Role();
-        adminRole.setId(1);
-        adminRole.setName("ADMIN");
-        adminRole = roleRepository.save(adminRole);
+        Role adminRole = roleRepository.findByName("ADMIN")
+        .orElseGet(() -> {
+            Role newRole = new Role();
+            newRole.setName("ADMIN");
+            return roleRepository.save(newRole);
+        });
 
         User adminUser = new User();
         adminUser.setUsername("admin");

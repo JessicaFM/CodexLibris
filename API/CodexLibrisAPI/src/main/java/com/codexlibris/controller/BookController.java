@@ -82,7 +82,10 @@ public class BookController {
                     BookDTO dto = new BookDTO();
                     dto.setTitle(book.getTitle());
                     dto.setIsbn(book.getIsbn());
-                    
+                    dto.setGenreId(book.getGenre().getId());
+                    dto.setAuthorId(book.getAuthor().getId());
+                    dto.setAvailable(book.getAvailable());
+                    dto.setPublishedDate(book.getPublished_date());
                     return dto;
                 })
                 .toList();
