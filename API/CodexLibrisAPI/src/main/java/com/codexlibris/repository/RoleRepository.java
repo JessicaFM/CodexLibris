@@ -5,6 +5,7 @@
 package com.codexlibris.repository;
 
 import com.codexlibris.model.Role;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,8 @@ import org.springframework.stereotype.Repository;
  * @author jessica
  */
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Integer> {}
+public interface RoleRepository extends JpaRepository<Role, Integer> {
+    
+    Optional<Role> findByName(String name);
+
+}
