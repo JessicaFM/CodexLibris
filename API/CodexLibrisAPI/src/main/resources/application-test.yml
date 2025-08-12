@@ -1,15 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/codexlibris
-    username: admin
-    password: admin
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 5
-      minimum-idle: 1
-      idle-timeout: 5000
-      max-lifetime: 15000
+    url: jdbc:tc:postgresql:16:///testdb
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+  cache:
+    type: NONE

@@ -4,7 +4,7 @@
  */
 package com.codexlibris.controller;
 
-import com.codexlibris.demo.integration.AbstractIntegrationTest;
+import com.codexlibris.demo.integration.IntegrationTestBase;
 import com.codexlibris.model.Author;
 import com.codexlibris.model.Book;
 import com.codexlibris.model.Genre;
@@ -40,11 +40,11 @@ import org.springframework.test.context.ActiveProfiles;
  * @author jessica
  */
 @SpringBootTest
-@Transactional
-@ActiveProfiles("test")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
-public class BookControllerTest extends AbstractIntegrationTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
+@Transactional
+public class BookControllerTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
@@ -142,7 +142,7 @@ public class BookControllerTest extends AbstractIntegrationTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateBook() throws Exception {
-        String json = """
+        String json = String.format("""
         {
             "title": "Nuevo libro",
             "authorId": %d,
@@ -151,7 +151,7 @@ public class BookControllerTest extends AbstractIntegrationTest {
             "genreId": %d,
             "available": true
         }
-        """;
+        """, authorId, genreId);
 
         mockMvc.perform(post("/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -159,9 +159,9 @@ public class BookControllerTest extends AbstractIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Nuevo libro"))
                 .andDo(result -> {
-    System.out.println("RESPONSE STATUS: " + result.getResponse().getStatus());
-    System.out.println("RESPONSE BODY: " + result.getResponse().getContentAsString());
-});
+                    System.out.println("RESPONSE STATUS: " + result.getResponse().getStatus());
+                    System.out.println("RESPONSE BODY: " + result.getResponse().getContentAsString());
+        });
 
     }
 

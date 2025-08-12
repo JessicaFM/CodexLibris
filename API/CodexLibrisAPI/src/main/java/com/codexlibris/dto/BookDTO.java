@@ -1,18 +1,23 @@
 package com.codexlibris.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
+import java.io.Serializable;
+import java.time.OffsetDateTime;
 /**
  *
  * @author jessica
  */
 @Data
-public class BookDTO {
+public class BookDTO implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
 
+    private Integer id; 
+    
     @NotBlank(message = "El títol del llibre es obligatori")
     private String title;
 
@@ -22,9 +27,9 @@ public class BookDTO {
     @NotBlank(message = "El codi ISBN es obligatori")
     private String isbn;
 
-    private LocalDateTime publishedDate;
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX")
+    private OffsetDateTime publishedDate;
 
-    @NotNull(message = "El genere del llibre es obligatori")
     private Integer genreId;
 
     private Boolean available;
