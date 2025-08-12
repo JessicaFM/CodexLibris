@@ -12,16 +12,14 @@ RUN mvn dependency:resolve
 
 COPY src ./src
 
-RUN mvn clean package -DskipTests -Dspring.profiles.active=docker
-
+RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:23-jdk-alpine
+
 WORKDIR /app
 
-#COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/codexlibris-api.jar app.jar
 
 EXPOSE 8080
 
-#CMD ["java", "-jar", "app.jar"]
-CMD ["java", "-jar", "-Dspring.profiles.active=docker", "app.jar"]
+CMD ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]

@@ -1,5 +1,6 @@
 package com.codexlibris.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.Data;

@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +36,8 @@ import org.springframework.data.domain.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 /**
  *
@@ -59,6 +61,7 @@ public class BookController {
         this.userRepository = userRepository;
     }
 
+    @Cacheable(value = "books", key = "#offset + '-' + #limit")
     @GetMapping
     @Operation(summary = "Obtenir el lllistat de tots els llibres")
     public  ResponseEntity<List<BookDTO>> getAllBooks(
@@ -80,12 +83,13 @@ public class BookController {
                 .limit(limit)
                 .map(book -> {
                     BookDTO dto = new BookDTO();
+                    dto.setId(book.getId());
                     dto.setTitle(book.getTitle());
                     dto.setIsbn(book.getIsbn());
                     dto.setGenreId(book.getGenre().getId());
                     dto.setAuthorId(book.getAuthor().getId());
                     dto.setAvailable(book.getAvailable());
-                    dto.setPublishedDate(book.getPublished_date());
+                    dto.setPublishedDate(book.getPublished_date().atOffset(ZoneOffset.UTC));
                     return dto;
                 })
                 .toList();
@@ -97,29 +101,48 @@ public class BookController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtenir un llibre a partir de un ID")
-    public ResponseEntity<Book> getBookById(@PathVariable Integer id) {
-        Optional<Book> book = bookRepository.findById(id);
-        return book.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<BookDTO> getBookById(@PathVariable Integer id) {
+        return bookRepository.findById(id)
+            .map(book -> {
+                BookDTO dto = new BookDTO();
+                dto.setId(book.getId());
+                dto.setTitle(book.getTitle());
+                dto.setIsbn(book.getIsbn());
+                dto.setGenreId(book.getGenre().getId());
+                dto.setAuthorId(book.getAuthor().getId());
+                dto.setAvailable(book.getAvailable());
+                dto.setPublishedDate(book.getPublished_date().atOffset(ZoneOffset.UTC));
+                return ResponseEntity.ok(dto);
+            })
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualitzar un llibre a partir de les dades proporcionades")
-    public ResponseEntity<?> updateBook(@PathVariable Integer id, @RequestBody BookUpdateDTO bookDTO) {
+    public ResponseEntity<BookDTO> updateBook(@PathVariable Integer id, @RequestBody BookUpdateDTO bookDTO) {
         return bookRepository.findById(id)
                 .map(book -> {
                     book.setTitle(bookDTO.getTitle());
                     book.setIsbn(bookDTO.getIsbn());
                     book.setAvailable(bookDTO.getAvailable());
-                    book.setPublished_date(bookDTO.getPublishedDate());
+                    book.setPublished_date(bookDTO.getPublishedDate().toLocalDateTime());
 
-                    // buscar entidades por ID
                     authorRepository.findById(bookDTO.getAuthorId()).ifPresent(book::setAuthor);
                     genreRepository.findById(bookDTO.getGenreId()).ifPresent(book::setGenre);
 
                     book.setUpdated_at(LocalDateTime.now());
 
-                    bookRepository.save(book);
-                    return ResponseEntity.ok(book);
+                    Book updated = bookRepository.save(book);
+
+                    BookDTO dto = new BookDTO();
+                    dto.setTitle(updated.getTitle());
+                    dto.setIsbn(updated.getIsbn());
+                    dto.setGenreId(updated.getGenre().getId());
+                    dto.setAuthorId(updated.getAuthor().getId());
+                    dto.setAvailable(updated.getAvailable());
+                    dto.setPublishedDate(book.getPublished_date().atOffset(ZoneOffset.UTC));
+
+                    return ResponseEntity.ok(dto);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -127,15 +150,11 @@ public class BookController {
     @Operation(summary = "Crear un nou llibre", description = "Crear un nou llibre amb les dades proporcionades")
     public ResponseEntity<?> createBook(@Valid @RequestBody BookDTO bookDTO, BindingResult result) {
         if (result.hasErrors()) {
-            log.warn("Error de validació creant llibre: {}", result.getAllErrors());
-
             List<String> errors = result.getAllErrors().stream()
                     .map(error -> error.getDefaultMessage())
                     .toList();
             return ResponseEntity.badRequest().body(errors);
         }
-
-        log.info("Intentant crear llibre amb títol: {}", bookDTO.getTitle());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -145,7 +164,8 @@ public class BookController {
                 .orElseThrow(() -> new RuntimeException("Error: No s'ha trobat l'usuari autenticat"));
 
         if (authUser.getRole().getId() != 1) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Accés denegat: Només els administradors poden crear nous llibres.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Accés denegat: Només els administradors poden crear nous llibres.");
         }
 
         Author author = authorRepository.findById(bookDTO.getAuthorId())
@@ -160,13 +180,19 @@ public class BookController {
         book.setIsbn(bookDTO.getIsbn());
         book.setGenre(genre);
         book.setAvailable(bookDTO.getAvailable());
-        book.setPublished_date(bookDTO.getPublishedDate());
+        book.setPublished_date(bookDTO.getPublishedDate().toLocalDateTime());
 
         Book savedBook = bookRepository.save(book);
 
-        log.info("Llibre creat amb ID: {}", savedBook.getId());
-        
-        return ResponseEntity.ok(savedBook);
+        BookDTO dto = new BookDTO();
+        dto.setTitle(savedBook.getTitle());
+        dto.setIsbn(savedBook.getIsbn());
+        dto.setGenreId(savedBook.getGenre().getId());
+        dto.setAuthorId(savedBook.getAuthor().getId());
+        dto.setAvailable(savedBook.getAvailable());
+        dto.setPublishedDate(book.getPublished_date().atOffset(ZoneOffset.UTC));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
     
     @DeleteMapping("/{id}")
@@ -192,5 +218,10 @@ public class BookController {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-
+    @CacheEvict(value = "books", allEntries = true)
+    @GetMapping("/clear-cache")
+    @Operation(summary = "Neteja la memòria cau de llibres")
+    public ResponseEntity<String> clearBooksCache() {
+        return ResponseEntity.ok("✅ Caché de llibres buidada correctament");
+    }
 }
