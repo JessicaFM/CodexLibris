@@ -15,6 +15,7 @@ import com.codexlibris.repository.AuthorRepository;
 import com.codexlibris.repository.BookRepository;
 import com.codexlibris.repository.GenreRepository;
 import com.codexlibris.repository.UserRepository;
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -99,6 +100,12 @@ public class BookController {
         return ResponseEntity.ok(dtosBooks);
     }
 
+    @Timed(
+        value = "books.get.by_id",
+        description = "Latency at GET /books/{id}",
+        histogram = true,
+        percentiles = {0.5, 0.95, 0.99}
+    )
     @GetMapping("/{id}")
     @Operation(summary = "Obtenir un llibre a partir de un ID")
     public ResponseEntity<BookDTO> getBookById(@PathVariable Integer id) {

@@ -64,3 +64,16 @@ logging:
     org.springframework.boot.env: DEBUG
     org.springframework.data.redis: DEBUG
     com.codexlibris: DEBUG
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name:codexlibris-api}
