@@ -15,6 +15,7 @@ import com.codexlibris.repository.AuthorRepository;
 import com.codexlibris.repository.BookRepository;
 import com.codexlibris.repository.GenreRepository;
 import com.codexlibris.repository.UserRepository;
+import com.codexlibris.service.BookService;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,49 +56,30 @@ public class BookController {
     private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(BookController.class);
 
-    public BookController(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository, UserRepository userRepository) {
+    private final BookService bookService;
+
+
+    public BookController(
+            BookRepository bookRepository,
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
+            UserRepository userRepository,
+            BookService bookService) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.userRepository = userRepository;
+        this.bookService = bookService;
     }
 
-    @Cacheable(value = "books", key = "#offset + '-' + #limit")
     @GetMapping
-    @Operation(summary = "Obtenir el lllistat de tots els llibres")
-    public  ResponseEntity<List<BookDTO>> getAllBooks(
-        @RequestParam(defaultValue = "0") int offset,
-        @RequestParam(defaultValue = "10") int limit) {
+    @Operation(summary = "Obtenir el llistat de tots els llibres")
+    public ResponseEntity<List<BookDTO>> getAllBooks(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
 
-        log.info("Obtenint llibres amb offset={} i limit={}", offset, limit);
-
-        int page = offset / limit;
-        
-        Pageable pageable = PageRequest.of(page, limit, Sort.by("title").ascending());
-        
-        Page<Book> bookPage = bookRepository.findAll(pageable);
-        
-        int skip = offset % limit;
-
-        List<BookDTO> dtosBooks = bookPage.getContent().stream()
-                .skip(skip)
-                .limit(limit)
-                .map(book -> {
-                    BookDTO dto = new BookDTO();
-                    dto.setId(book.getId());
-                    dto.setTitle(book.getTitle());
-                    dto.setIsbn(book.getIsbn());
-                    dto.setGenreId(book.getGenre().getId());
-                    dto.setAuthorId(book.getAuthor().getId());
-                    dto.setAvailable(book.getAvailable());
-                    dto.setPublishedDate(book.getPublished_date().atOffset(ZoneOffset.UTC));
-                    return dto;
-                })
-                .toList();
-
-        log.info("Retornats {} llibres", dtosBooks.size());
-
-        return ResponseEntity.ok(dtosBooks);
+        List<BookDTO> body = bookService.getAllBooks(offset, limit);
+        return ResponseEntity.ok(body);
     }
 
     @Timed(
